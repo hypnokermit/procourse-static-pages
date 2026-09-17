@@ -1,4 +1,4 @@
-import Page from "../models/page";
+import Page from "../../models/page";
 import Controller from "@ember/controller";
 import EmberObject, { observer, computed } from "@ember/object";
 import { service } from "@ember/service";

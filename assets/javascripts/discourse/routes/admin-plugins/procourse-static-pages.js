@@ -1,4 +1,4 @@
-import Page from '../models/page';
+import Page from '../../models/page';
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
