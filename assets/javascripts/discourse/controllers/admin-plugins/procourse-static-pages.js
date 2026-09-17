@@ -1,8 +1,7 @@
-import Page from "../../models/page";
 import Controller from "@ember/controller";
-import EmberObject, { observer, computed } from "@ember/object";
+import EmberObject, { action, computed, observer } from "@ember/object";
 import { service } from "@ember/service";
-import { action } from "@ember/object";
+import Page from "../../models/page";
 
 export default Controller.extend({
   init() {
@@ -139,13 +138,13 @@ export default Controller.extend({
     },
 
     newPCPage: function () {
-      var basePCPage = this.get("basePCPage");
+      let basePCPage = this.get("basePCPage");
       const newPCPage = EmberObject.create(basePCPage);
-      var newTitle = I18n.t("admin.procourse_static_pages.pages.new_title");
+      let newTitle = I18n.t("admin.procourse_static_pages.pages.new_title");
       newPCPage.set("title", newTitle);
       newPCPage.set("slug", this.slugify(newTitle));
       newPCPage.set("slugEdited", false);
-      newPCPage.set("group", null), newPCPage.set("newRecord", true);
+      (newPCPage.set("group", null), newPCPage.set("newRecord", true));
       newPCPage.set("html", false);
       newPCPage.set("html_content", "");
       this.get("model").pushObject(newPCPage);
@@ -153,7 +152,7 @@ export default Controller.extend({
     },
 
     toggleEnabled: function () {
-      var selectedItem = this.get("selectedItem");
+      let selectedItem = this.get("selectedItem");
       selectedItem.toggleProperty("active");
       Page.save(this.get("selectedItem"), true);
     },
@@ -162,9 +161,7 @@ export default Controller.extend({
       return !this.get("id") || this.get("saving");
     }),
 
-    newRecord: computed("id", function () {
-      return !this.get("id");
-    }),
+    newRecord: computed.not("id"),
 
     save: function () {
       if (
@@ -178,7 +175,7 @@ export default Controller.extend({
     },
 
     copy: function (page) {
-      var newPCPage = Page.copy(page);
+      let newPCPage = Page.copy(page);
       newPCPage.set(
         "title",
         I18n.t("admin.customize.colors.copy_name_prefix") +

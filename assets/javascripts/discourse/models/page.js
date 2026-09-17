@@ -1,11 +1,11 @@
-import { ajax } from "discourse/lib/ajax";
-import { cook } from "discourse/lib/text";
-import Group from "discourse/models/group";
-import EmberObject, { observer } from "@ember/object";
 import { A } from "@ember/array";
 import ArrayProxy from "@ember/array/proxy";
+import EmberObject, { observer } from "@ember/object";
 import { isHTMLSafe } from "@ember/template";
-import { getURLWithCDN } from "discourse-common/lib/get-url";
+import { ajax } from "discourse/lib/ajax";
+import { getURLWithCDN } from "discourse/lib/get-url";
+import { cook } from "discourse/lib/text";
+import Group from "discourse/models/group";
 
 const StaticPage = EmberObject.extend({
   init: function () {
@@ -17,8 +17,8 @@ function getOpts() {
   const container = Discourse.__container__;
   return {
     getURL: getURLWithCDN,
-    currentUser: container.lookup("current-user:main"),
-    siteSettings: container.lookup("site-settings:main"),
+    currentUser: container.lookup("service:current-user"),
+    siteSettings: container.lookup("service:site-settings"),
   };
 }
 
@@ -65,12 +65,14 @@ StaticPage.reopenClass({
   },
 
   save: async function (object, enabledOnly = false) {
-    if (object.get("disableSave")) return;
+    if (object.get("disableSave")) {
+      return;
+    }
 
     object.set("savingStatus", I18n.t("saving"));
     object.set("saving", true);
 
-    var data = { active: object.active };
+    let data = { active: object.active };
 
     if (object.id) {
       data.id = object.id;
@@ -133,7 +135,7 @@ StaticPage.reopenClass({
   },
 
   copy: function (object) {
-    var copiedPage = StaticPage.create({
+    let copiedPage = StaticPage.create({
       ...object,
       id: null,
     });
@@ -142,7 +144,7 @@ StaticPage.reopenClass({
 
   destroy: function (object) {
     if (object.id) {
-      var data = { id: object.id };
+      let data = { id: object.id };
       return ajax("/procourse-static-pages/admin/pages.json", {
         data: JSON.stringify({ page: data }),
         type: "DELETE",

@@ -1,7 +1,7 @@
 export default {
-  resource: 'admin.adminPlugins',
-  path: '/plugins',
+  resource: "admin.adminPlugins",
+  path: "/plugins",
   map() {
-    this.route('procourse-static-pages');
-  }
+    this.route("procourse-static-pages");
+  },
 };

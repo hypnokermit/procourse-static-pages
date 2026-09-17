@@ -1,6 +1,6 @@
-import Page from '../../../models/page-show';
-import DiscourseURL from 'discourse/lib/url';
+import DiscourseURL from "discourse/lib/url";
 import DiscourseRoute from "discourse/routes/discourse";
+import Page from "../../../models/page-show";
 
 export default DiscourseRoute.extend({
   model(opts) {
@@ -8,7 +8,7 @@ export default DiscourseRoute.extend({
   },
 
   titleToken() {
-    const model = this.modelFor('procourse-static-pages.page.show');
+    const model = this.modelFor("procourse-static-pages.page.show");
     if (model && model.title) {
       return model.title;
     }
@@ -18,8 +18,8 @@ export default DiscourseRoute.extend({
     controller.setProperties({ model });
   },
 
-  afterModel: function(result) {
-    var newURL = `/page/${result.slug}/${result.id}/`;
+  afterModel: function (result) {
+    let newURL = `/page/${result.slug}/${result.id}/`;
     DiscourseURL.routeTo(newURL, { replaceURL: true });
-  }
+  },
 });

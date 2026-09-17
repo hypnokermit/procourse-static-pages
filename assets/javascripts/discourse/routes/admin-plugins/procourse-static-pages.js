@@ -1,5 +1,5 @@
-import Page from '../../models/page';
 import DiscourseRoute from "discourse/routes/discourse";
+import Page from "../../models/page";
 
 export default DiscourseRoute.extend({
   model() {
@@ -8,5 +8,5 @@ export default DiscourseRoute.extend({
 
   setupController(controller, model) {
     controller.setProperties({ model });
-  }
+  },
 });
