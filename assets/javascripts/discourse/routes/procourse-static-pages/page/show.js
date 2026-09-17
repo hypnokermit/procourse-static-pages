@@ -1,4 +1,4 @@
-import Page from '../models/page-show';
+import Page from '../../../models/page-show';
 import DiscourseURL from 'discourse/lib/url';
 import DiscourseRoute from "discourse/routes/discourse";
 
