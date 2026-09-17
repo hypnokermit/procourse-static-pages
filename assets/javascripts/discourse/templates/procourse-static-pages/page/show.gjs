@@ -1,7 +1,9 @@
-<div class="static-page">
+
+
+export default <template><div class="static-page">
   {{#if model.html}}
     {{{model.html_content}}}
   {{else}}
     {{{model.cooked}}}
   {{/if}}
-</div>
+</div></template>
