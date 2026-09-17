@@ -1,40 +1,34 @@
-import { A } from "@ember/array";
-import ArrayProxy from "@ember/array/proxy";
-import EmberObject, { observer } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
+import EmberObject from "@ember/object";
 import { isHTMLSafe } from "@ember/template";
 import { ajax } from "discourse/lib/ajax";
 import { getURLWithCDN } from "discourse/lib/get-url";
 import { cook } from "discourse/lib/text";
 import Group from "discourse/models/group";
+import { i18n } from "discourse-i18n";
 
-const StaticPage = EmberObject.extend({
-  init: function () {
-    this._super(...arguments);
-  },
-});
-
-function getOpts() {
-  const container = Discourse.__container__;
-  return {
-    getURL: getURLWithCDN,
-    currentUser: container.lookup("service:current-user"),
-    siteSettings: container.lookup("service:site-settings"),
-  };
+class StaticPage extends EmberObject {
+  init() {
+    super.init(...arguments);
+  }
 }
 
-const StaticPages = ArrayProxy.extend({
-  loading: true,
-  selectedItemChanged: observer("selectedItem", function () {
-    const selected = this.get("selectedItem");
-    (this.get("content") || []).forEach((i) =>
-      i.set("selected", selected === i)
-    );
-  }),
-});
+class StaticPagesModel {
+  @tracked items = [];
+  @tracked loading = true;
+
+  pushObject(item) {
+    this.items = [...this.items, item];
+  }
+
+  removeObject(item) {
+    this.items = this.items.filter((existing) => existing !== item);
+  }
+}
 
 StaticPage.reopenClass({
   findAll: function () {
-    const model = StaticPages.create({ content: A(), loading: true });
+    const model = new StaticPagesModel();
     ajax("/procourse-static-pages/admin/pages.json").then((rows) => {
       (rows || []).forEach((row) => {
         let src = row;
@@ -59,7 +53,7 @@ StaticPage.reopenClass({
           );
         }
       });
-      model.set("loading", false);
+      model.loading = false;
     });
     return model;
   },
@@ -69,7 +63,7 @@ StaticPage.reopenClass({
       return;
     }
 
-    object.set("savingStatus", I18n.t("saving"));
+    object.set("savingStatus", i18n("saving"));
     object.set("saving", true);
 
     let data = { active: object.active };
@@ -81,7 +75,7 @@ StaticPage.reopenClass({
     if (!object || !enabledOnly) {
       let cookedStr = "";
       if (!object.html) {
-        const maybe = cook(object.raw || "", getOpts());
+        const maybe = cook(object.raw || "", { getURL: getURLWithCDN });
         const result = typeof maybe?.then === "function" ? await maybe : maybe;
 
         // ensure we persist a *plain string*:
@@ -116,19 +110,16 @@ StaticPage.reopenClass({
       contentType: "application/json",
     })
       .catch(function (result) {
-        if (
-          result.jqXHR.responseJSON &&
-          result.jqXHR.responseJSON.errors &&
-          result.jqXHR.responseJSON.errors[0]
-        ) {
-          this.dialog.alert({ message: result.jqXHR.responseJSON.errors[0] });
-          return alert(result.jqXHR.responseJSON.errors[0]);
+        const message = result?.jqXHR?.responseJSON?.errors?.[0];
+        if (message) {
+          // eslint-disable-next-line no-console
+          console.error("[static-pages] save failed:", message);
         }
       })
       .then(function (result) {
         if (result.id) {
           object.set("id", result.id);
-          object.set("savingStatus", I18n.t("saved"));
+          object.set("savingStatus", i18n("saved"));
           object.set("saving", false);
         }
       });
