@@ -1,6 +1,6 @@
 import { tracked } from "@glimmer/tracking";
 import Controller from "@ember/controller";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import Page from "../../models/page";
@@ -25,10 +25,22 @@ export default class AdminPluginsProcourseStaticPagesController extends Controll
     return page;
   }
 
+  @computed("selectedItem.id", "selectedItem.saving")
   get disableEnable() {
     return !this.selectedItem?.id || this.selectedItem?.saving;
   }
 
+  @computed(
+    "originals",
+    "forceEnableSave",
+    "selectedItem.title",
+    "selectedItem.slug",
+    "selectedItem.group",
+    "selectedItem.raw",
+    "selectedItem.html",
+    "selectedItem.html_content",
+    "selectedItem.cooked",
+  )
   get disableSave() {
     if (this.forceEnableSave) {
       return false;
